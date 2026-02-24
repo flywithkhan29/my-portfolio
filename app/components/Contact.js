@@ -67,9 +67,9 @@ export default function Contact() {
   };
 
   const contacts = [
-    { icon: '✉️', label: 'Email', value: 'your.email@example.com' },
-    { icon: '💼', label: 'LinkedIn', value: 'linkedin.com/in/yourprofile' },
-    { icon: '🐙', label: 'GitHub', value: 'github.com/yourusername' },
+    { icon: '✉️', label: 'Email', value: 'saadkhanpathan386@outlook.com' },
+    { icon: '💼', label: 'LinkedIn', value: 'https://www.linkedin.com/in/flywithkhan/' },
+    { icon: '🐙', label: 'GitHub', value: 'https://github.com/flywithkhan29' },
   ];
 
   const inputStyle = {
