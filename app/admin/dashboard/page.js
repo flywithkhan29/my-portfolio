@@ -150,7 +150,7 @@ export default function AdminDashboard() {
       {/* Tabs */}
       <div style={{ padding: '24px 40px 0' }}>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {['projects', 'skills', 'contact'].map(t => (
+          {['projects', 'skills', 'contact', 'messages'].map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               padding: '10px 24px', borderRadius: '999px',
               border: 'none', cursor: 'pointer',
@@ -279,6 +279,70 @@ export default function AdminDashboard() {
         )}
 
       </div>
+      {/* ── MESSAGES TAB ── */}
+      {tab === 'messages' && (
+       <MessagesTab />
+)}
     </div>
   );
+  function MessagesTab() {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/messages')
+      .then(r => r.json())
+      .then(data => { setMessages(data || []); setLoading(false); });
+  }, []);
+
+  const deleteMessage = async (id) => {
+    if (!confirm('Delete this message?')) return;
+    await fetch('/api/messages/' + id, { method: 'DELETE' });
+    setMessages(messages.filter(m => m._id !== id));
+  };
+
+  if (loading) return <p style={{ color: '#999' }}>Loading messages...</p>;
+  if (messages.length === 0) return (
+    <div style={{ textAlign: 'center', padding: '60px', color: '#999' }}>
+      <p style={{ fontSize: '2rem', marginBottom: '12px' }}>📭</p>
+      <p>No messages yet. They'll appear here when someone contacts you.</p>
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '800px' }}>
+      <h2 style={{ fontWeight: '700', color: '#1a1a1a', marginBottom: '8px' }}>
+        Messages ({messages.length})
+      </h2>
+      {messages.map(m => (
+        <div key={m._id} style={{
+          background: '#fff', borderRadius: '16px', padding: '24px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.05)',
+          border: '1px solid rgba(0,0,0,0.07)',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+            <div>
+              <p style={{ fontWeight: '700', color: '#1a1a1a', fontSize: '1rem' }}>{m.name}</p>
+              <p style={{ color: '#e85d5d', fontSize: '0.85rem' }}>{m.email}</p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <p style={{ color: '#999', fontSize: '0.78rem' }}>
+                {new Date(m.createdAt).toLocaleDateString()}
+              </p>
+              <button onClick={() => deleteMessage(m._id)} style={{
+                background: '#ff4444', color: '#fff', border: 'none',
+                padding: '6px 14px', borderRadius: '999px',
+                fontSize: '0.78rem', fontWeight: '600', cursor: 'pointer',
+              }}>
+                Delete
+              </button>
+            </div>
+          </div>
+          {m.subject && <p style={{ color: '#555', fontSize: '0.85rem', fontWeight: '600', marginBottom: '8px' }}>Subject: {m.subject}</p>}
+          <p style={{ color: '#666', fontSize: '0.9rem', lineHeight: '1.7' }}>{m.message}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 }
